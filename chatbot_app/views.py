@@ -1,9 +1,10 @@
 import pandas as pd, numpy as np, openai, environ
 from django.shortcuts import render
 from django.conf import settings
-
+from django.utils.safestring import mark_safe
 # Create your views here.
 from rest_framework.decorators import api_view
+import json
 from rest_framework.response import Response
 from django.views.generic import TemplateView
 
@@ -18,7 +19,7 @@ def generate_response(message_list):
             temperature=0.7,
         )
         return response.choices[0].message['content']
-df = pd.read_excel(r'C:\Users\Tamerlan\Downloads\sample_people.xlsx')
+df = pd.read_excel(r'C:\Users\Tamerlan\Desktop\chatbot_project\sample_people.xlsx')
 
 def get_message_list(olympiad = False, i=0):
         message_list_no_olympiad =  [
@@ -86,4 +87,13 @@ def chatbot(request):
          messages_ += [{"role": "assistant", 'content': new_response}]
 
     return Response({"message":new_response})
+
+def index(request):
+      return render(request, 'home.html')
+
+def room(request, room_name):
+    """"""
+    return render(request, 'room.html', {
+        'room_name_json': mark_safe(json.dumps(room_name))
+    })
 
