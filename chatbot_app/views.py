@@ -19,7 +19,7 @@ def generate_response(message_list):
             temperature=0.7,
         )
         return response.choices[0].message['content']
-df = pd.read_excel(r'C:\Users\Tamerlan\Desktop\chatbot_project\sample_people.xlsx')
+df = pd.read_excel('sample_people.xlsx')
 
 def get_message_list(olympiad = False, i=0):
         message_list_no_olympiad =  [
