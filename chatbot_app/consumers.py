@@ -1,7 +1,7 @@
 import json, asyncio, pandas as pd, numpy as np, openai, environ
 from django.conf import settings
 from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
+from channels.generic.websocket import  AsyncWebsocketConsumer
 
 
 async def generate_response(message_list):
@@ -95,7 +95,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             for msg in new_response:
                 if msg['choices'][0]['delta'].get('content') != None:
-                    print(msg['choices'][0]['delta'].get('content').encode())
+
                     await asyncio.sleep(0.1)
                     
                     yield json.dumps({'message': msg['choices'][0]['delta'].get('content')}) 
