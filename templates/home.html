@@ -11,17 +11,48 @@
     <input id="room-name-submit" type="button" value="Enter"/>
 
     <script>
-        document.querySelector('#room-name-input').focus();
-        document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#room-name-submit').click();
+        fetch('http://127.0.0.1:8000/api/', {
+            headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+          method: 'POST',
+          body: JSON.stringify({id:1, msg: "hello"}),
+        })
+        .then(response => {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+        
+          return new ReadableStream({
+            start(controller) {
+              function push() {
+                reader.read().then(({ done, value }) => {
+                  if (done) {
+                    controller.close();
+                    return;
+                  }
+              
+                  controller.enqueue(decoder.decode(value));
+                  push();
+                });
+              }
+          
+              push();
             }
-        };
-
-        document.querySelector('#room-name-submit').onclick = function(e) {
-            var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/' + roomName + '/';
-        };
+          });
+        })
+        .then(stream => {
+          const reader = stream.getReader();
+        
+          reader.read().then(function processText({ done, value }) {
+            if (done) {
+              return;
+            }
+        
+            console.log(value);
+            return reader.read().then(processText);
+          });
+        });
     </script>
 </body>
 </html>

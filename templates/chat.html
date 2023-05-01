@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Room</title>
+</head>
+<body>
+    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
+    <input id="chat-message-input" type="text" size="100"/><br/>
+    <input id="chat-message-submit" type="button" value="Send"/>
+</body>
+<script>
+    
+    const socket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/');
+
+        
+socket.addEventListener('message', event => {
+    // Create a ReadableStream from the data
+    const dataStream = event.data.stream();
+
+    // Read the data from the stream
+    const reader = dataStream.getReader();
+    reader.read().then(function processResult(result) {
+        console.log(result)
+        if (result.done) {
+            // The stream has ended
+            return;
+        }
+
+        // Update the UI with the new data
+        const data = JSON.parse(result.value);
+        document.getElementById('message').innerHTML = data.message;
+
+        // Read the next chunk of data
+        reader.read().then(processResult);
+    });
+});
+
+
+
+socket.addEventListener('open', event => {
+
+    // Send a message to the server
+    const message = { text: 'Hello, server!' };
+    socket.send(JSON.stringify(message));
+    
+});
+
+socket.onmessage = (event) => {
+  console.log(event.data);
+};
+
+socket.addEventListener('close', event => {
+    console.log('WebSocket connection closed');
+});
+
+</script>
+</html>

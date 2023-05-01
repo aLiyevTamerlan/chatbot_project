@@ -10,36 +10,51 @@
     <input id="chat-message-submit" type="button" value="Send"/>
 </body>
 <script>
-    var roomName = {{ room_name_json }};
+    
+//     const socket = new WebSocket(
+//         'ws://' + window.location.host + '/ws/chat/');
 
-    var chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chat/' + roomName + '/');
+        
+// socket.addEventListener('open', event => {
 
-    chatSocket.onmessage = function(e) {
-        var data = JSON.parse(e.data);
-        var message = data['message'];
-        document.querySelector('#chat-log').value += (message + '\n');
-    };
+//     // Send a message to the server
+//     const message = { text: 'Hello, server!' };
+//     socket.send(JSON.stringify(message));
+    
+// });
 
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
+// socket.onmessage = function(event) {
+//   var data = JSON.parse(event.data);
+//     console.log(data)
+// }
 
-    document.querySelector('#chat-message-input').focus();
-    document.querySelector('#chat-message-input').onkeyup = function(e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#chat-message-submit').click();
-        }
-    };
+const socket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/');
 
-    document.querySelector('#chat-message-submit').onclick = function(e) {
-        var messageInputDom = document.querySelector('#chat-message-input');
-        var message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
+// When the WebSocket connection is established
+socket.addEventListener('open', () => {
+  console.log('WebSocket connection established');
 
-        messageInputDom.value = '';
-    };
+  // Send a message to the server
+  socket.send(JSON.stringify({ action: 'start_stream' }));
+});
+
+// When a message is received from the server
+socket.addEventListener('message', event => {
+  const message = JSON.parse(event.data);
+  console.log('Received message:', message);
+
+  // Do something with the received message
+});
+
+// When the WebSocket connection is closed
+socket.addEventListener('close', () => {
+  console.log('WebSocket connection closed');
+});
+
+// When there is an error with the WebSocket connection
+socket.addEventListener('error', event => {
+  console.error('WebSocket error:', event);
+});
 </script>
 </html>

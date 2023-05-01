@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/', include('chatbot_app.urls')),
     path('', views.index),
     path('<str:room_name>/', views.room, name='room'),
+    path('chat/', views.chat),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
